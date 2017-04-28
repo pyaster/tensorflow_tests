@@ -10,9 +10,11 @@ import matplotlib; matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import io
 
-def variable_summaries(var):
+def variable_summaries(var, label=None):
     """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
-    with tf.name_scope('summaries'):
+
+    label = label or 'summaries'
+    with tf.name_scope(label):
         mean = tf.reduce_mean(var)
         tf.summary.scalar('mean', mean)
         with tf.name_scope('stddev'):
