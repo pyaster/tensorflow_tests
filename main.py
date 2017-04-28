@@ -22,6 +22,60 @@ def variable_summaries(var):
         tf.summary.scalar('min', tf.reduce_min(var))
         tf.summary.histogram('histogram', var)
 
+def gen_plot(title, x, *ys):
+    """Create a pyplot plot and save to buffer."""
+    fig, ax = plt.subplots()
+
+    for y in ys:
+        ax.plot(x, y)
+
+    ax.set_title(title)
+
+    plot = io.BytesIO()
+    fig.savefig(plot, format='png')
+    plot.seek(0)
+    return plot
+
+def gen_scatter(title, x, *ys):
+    """Create a pyplot plot and save to buffer."""
+    fig, ax = plt.subplots()
+
+    for y in ys:
+        ax.scatter(x, y)
+
+    ax.set_title(title)
+
+    plot = io.BytesIO()
+    fig.savefig(plot, format='png')
+    plot.seek(0)
+    return plot
+
+
+def image_summary(image, label):
+    """Create a image protobuff from PNG image.
+    Need to be executed and added to a writer
+
+    img = image_summary(plot, 'plot_7')
+    summary = sess.run(img)
+    writer.add_summary(summary)
+    """
+    img = tf.image.decode_png(image.getvalue(), channels=4)
+    # Add the batch dimension to be a tensor of images
+    img = tf.expand_dims(img, 0)
+
+    # save image summary
+    summary = tf.summary.image(label, img)
+
+    return summary
+
+
+def add_image_summary(image, label, writer, sess=None):
+    "Add an image summary to a writer"
+    img = image_summary(image, label)
+    summary = (sess or tf.get_default_session()).run(img)
+    writer.add_summary(summary)
+
+
 
 def log_dir(FLAGS):
     "Prepare Tensorboard log directory"

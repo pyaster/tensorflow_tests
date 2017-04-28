@@ -101,8 +101,30 @@ def test_cyclic_flows(FLAGS):
 
     train_writer.close()
 
-    foo = 1
 
+def test_image(FLAGS):
+    "Create a simple image and ad to TB summary"
+    tf.reset_default_graph()
+
+    x = tf.random_uniform([30])
+    y1 = x * x + 0.25
+    y2 = x - 0.25
+
+    # Create a session
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+
+    train_writer = tf.summary.FileWriter(FLAGS.log_dir + '/images',
+                                         sess.graph)
+
+    step = [x, y1, y2]
+    x_, y1_, y2_ = sess.run(step)
+
+    image = gen_scatter('A demo plot', x_, y1_, y2_)
+
+    add_image_summary(image, 'demo', train_writer, sess)
+
+    train_writer.close()
 
 if __name__ == '__main__':
     FLAGS, unparsed = cmd_parser()
@@ -111,3 +133,4 @@ if __name__ == '__main__':
     test_placeholders(FLAGS)
     test_merge(FLAGS)
     test_cyclic_flows(FLAGS)
+    test_image(FLAGS)
