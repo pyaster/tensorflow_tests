@@ -57,7 +57,7 @@ def test_fit_theta(FLAGS):
 
     # Create the input data
     Theta_r = tf.constant([1.2, 0.25],  name="Theta_r", shape=(1, 2))
-    X = tf.random_uniform([5], 0.0, 10)
+    X = tf.random_uniform([1000], 0.0, 10)
     X = tf.reshape(X, [1, -1])
     bias = tf.ones_like(X)
 
@@ -69,7 +69,7 @@ def test_fit_theta(FLAGS):
     # Inference Graph
     with tf.name_scope('inference'):
         # Create the model
-        Theta = tf.Variable(tf.random_uniform([1, 2], 0.0, 1.0), name='Theta')
+        Theta = tf.Variable(tf.random_uniform([1, 2], -0.1, 0.1), name='Theta')
         Y = tf.matmul(Theta, X)
         variable_summaries(Theta, 'Theta')
 
@@ -80,7 +80,10 @@ def test_fit_theta(FLAGS):
         loss = tf.reduce_mean(v_loss)
 
         # optimizer = tf.train.GradientDescentOptimizer(0.005)
-        optimizer = tf.train.AdamOptimizer()
+        # optimizer = tf.train.AdamOptimizer()
+        optimizer = tf.train.MomentumOptimizer(0.01, 0.01)
+        # optimizer = tf.contrib.keras.optimizers.Nadam()
+
 
         step = optimizer.minimize(loss)
 
@@ -112,7 +115,7 @@ def test_fit_theta(FLAGS):
 
             r = (err0 - err) / err0
             print("Rel.Error:\t%s" % r)
-            if err < 1e-06 or r < 0.001:
+            if err < 1e-09 or r < 0.001:
                 break
             err0 = err
 
